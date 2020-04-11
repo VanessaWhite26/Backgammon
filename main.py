@@ -3,6 +3,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
 from kivy.core.window import Window
+from kivy.uix.button import Button
 
 class Background(Widget):
     dice_texture = ObjectProperty(None)
@@ -20,6 +21,19 @@ class Background(Widget):
         self.points_texture.wrap = 'repeat'
         self.points_texture.uvsize = (Window.width / self.dice_texture.width, -1)
 
+
+    def callback(self):
+        self.hello = Button(text = "hello")
+        # create a button
+        # btn1 = Button(text="Start")
+        # btn1.bind(on_press = callback)
+        # btn2 = Button (text = "Help")
+        # btn2.bind(on_press = callback)
+        # btn3 = Button(text = "Exit")
+        # btn3.bind(on_press = callback)
+    pass
+
+
     def scroll_textures(self, time_passed):
         #update the uvpos
         self.dice_texture.uvpos = ((self.dice_texture.uvpos[0] + time_passed)%Window.width, self.dice_texture.uvpos[1])
@@ -33,6 +47,7 @@ class Background(Widget):
     pass
 
 from kivy.clock import Clock
+
 
 class MainApp(App):
     def on_start(self):
