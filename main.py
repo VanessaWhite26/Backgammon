@@ -46,23 +46,50 @@ class ButtonApp(App):
 
     def build(self):
         # use a (r, g, b, a) tuple
-        btn = Button(text="Push Me !",
+        start = Widget()
+
+        startButton = Button(text="Start",
                      font_size="20sp",
                      background_color=(1, 1, 1, 1),
                      color=(1, 1, 1, 1),
-                     size=(32, 32),
+                     size=(100,75),
                      size_hint=(.2, .2),
-                     pos=(300, 250))
+                     pos=(Window.width/2 - 50 , Window.height/2 + 50))
+
+        helpButton = Button(text="Help",
+                     font_size="20sp",
+                     background_color=(1, 1, 1, 1),
+                     color=(1, 1, 1, 1),
+                     size=(100, 75),
+                     size_hint=(.2, .2),
+                     pos=(Window.width/2 - 50 , Window.height/2 -50 ))
+
+
+        exitButton = Button(text="Exit",
+                     font_size="20sp",
+                     background_color=(1, 1, 1, 1),
+                     color=(1, 1, 1, 1),
+                     size=(100, 75),
+                     size_hint=(.2, .2),
+                     pos=(Window.width/2 - 50 , Window.height/2 - 150))
+
+        start.add_widget(startButton)
+        start.add_widget(helpButton)
+        start.add_widget(exitButton)
 
 
         # bind() use to bind the button to function callback
-        btn.bind(on_press=self.callback)
-        return btn
+        # startButton.bind(on_press = self.callback)
+        # helpButton.bind(on_press = self.callback)
+        # exitButton.bind(on_press = self.callback)
 
-    # callback function tells when button pressed
-    def callback(self, event):
-        print("button pressed")
-        print('Yoooo !!!!!!!!!!!')
+        return start
+
+
+    # # callback function tells when button pressed
+    # def callback(self, event):
+    #     print("button pressed")
+    #     print('Yoooo !!!!!!!!!!!')
 
 
 
