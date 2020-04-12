@@ -4,6 +4,9 @@ from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.uix.button import Button
+import kivy
+kivy.require("1.9.1")
+
 
 class Background(Widget):
     dice_texture = ObjectProperty(None)
@@ -22,16 +25,6 @@ class Background(Widget):
         self.points_texture.uvsize = (Window.width / self.dice_texture.width, -1)
 
 
-    def callback(self):
-        self.hello = Button(text = "hello")
-        # create a button
-        # btn1 = Button(text="Start")
-        # btn1.bind(on_press = callback)
-        # btn2 = Button (text = "Help")
-        # btn2.bind(on_press = callback)
-        # btn3 = Button(text = "Exit")
-        # btn3.bind(on_press = callback)
-    pass
 
 
     def scroll_textures(self, time_passed):
@@ -49,9 +42,35 @@ class Background(Widget):
 from kivy.clock import Clock
 
 
+class ButtonApp(App):
+
+    def build(self):
+        # use a (r, g, b, a) tuple
+        btn = Button(text="Push Me !",
+                     font_size="20sp",
+                     background_color=(1, 1, 1, 1),
+                     color=(1, 1, 1, 1),
+                     size=(32, 32),
+                     size_hint=(.2, .2),
+                     pos=(300, 250))
+
+
+        # bind() use to bind the button to function callback
+        btn.bind(on_press=self.callback)
+        return btn
+
+    # callback function tells when button pressed
+    def callback(self, event):
+        print("button pressed")
+        print('Yoooo !!!!!!!!!!!')
+
+
+
 class MainApp(App):
     def on_start(self):
         Clock.schedule_interval(self.root.ids.background.scroll_textures, 1/500.)
+        root = ButtonApp()
+        root.run()
     pass
 
 
