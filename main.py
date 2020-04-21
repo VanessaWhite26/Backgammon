@@ -1,14 +1,24 @@
 from kivy.app import App
+from kivy.core.text import Label
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.widget import Widget
+from kivy.uix.screenmanager import (ScreenManager, Screen, NoTransition,
+                                    SlideTransition, CardTransition, SwapTransition,
+                                    FadeTransition, WipeTransition, FallOutTransition, RiseInTransition)
+
+from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.uix.button import Button
+from kivy.lang import Builder
 import kivy
 
 kivy.require("1.9.1")
 
 
+# ----------------------------------------------------------------------------------------------------------
+# Background/ Menu class
 class Background(Widget):
     dice_texture = ObjectProperty(None)
     points_texture = ObjectProperty(None)
@@ -28,9 +38,9 @@ class Background(Widget):
     def scroll_textures(self, time_passed):
         # update the uvpos
         self.dice_texture.uvpos = (
-        (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
+            (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
         self.points_texture.uvpos = (
-        (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
+            (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
         # Redraw the texture
         texture = self.property("dice_texture")
         texture.dispatch(self)
@@ -41,15 +51,16 @@ class Background(Widget):
     pass
 
 
-from kivy.clock import Clock
-
+# ----------------------------------------------------------------------------------------------------------
+# Button class
 
 class ButtonApp(App):
 
     def build(self):
-        # use a (r, g, b, a) tuple
+        # Create a widget to bold the buttons
         start = Widget()
 
+        # Create the buttons
         startButton = Button(text="Start",
                              font_size="20sp",
                              background_color=(1, 1, 1, 1),
@@ -85,9 +96,10 @@ class ButtonApp(App):
 
         return start
 
-    # # callback function tells when button pressed
+    # Use startGame, helpPage, exitGame to give functionality to each of the buttons pressed
     def startGame(self, event):
-        print("You started the game!")
+        print("game started")
+        MainApp().run().screenManager.current = "game"
 
     def helpPage(self, event):
         print("Heading to the help page")
@@ -96,14 +108,41 @@ class ButtonApp(App):
         exit()
 
 
+# ----------------------------------------------------------------------------------------------------------
 
+# ----------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------
+class board(App):
+    def build(self):
+        return Label(text="Game Yes!!")
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+
+# ----------------------------------------------------------------------------------------------------------
 class MainApp(App):
     def on_start(self):
-        Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
-        root = ButtonApp()
-        root.run()
+        self.screenManager = ScreenManager()
+        self.menu = Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
+        self.root = ButtonApp().run()
+        screen = Screen(name="menu")
+        screen2 = Screen(name="buttons")
+        screen.add_widget(self.menu)
+        screen.add_widget(self.root)
+        self.screenManager.add_widget(screen)
+        self.screenManager.add_widget(screen2)
 
-    pass
+        self.board = board()
+        screen = Screen(name="game")
+        screen.add_widget(self.board)
+        self.screenManager.add_widget(screen)
+
+        return self.screenManager
 
 
 MainApp().run()
