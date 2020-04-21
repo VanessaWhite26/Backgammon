@@ -1,3 +1,12 @@
+import kivy
+
+kivy.require('1.9.0')
+
+
+from kivy.app import App
+from kivy.core.audio import SoundLoader
+from kivy.lang import Builder
+from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
@@ -5,13 +14,123 @@ from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.uix.button import Button
 import kivy
+from kivy.clock import Clock
 
-kivy.require("1.9.1")
+# You can create your kv code in the Python file
+Builder.load_string("""
+
+# 
+# Background: 
+#     id: background
+#     canvas.before:
+#         Rectangle:
+#             size: self.size
+#             pos: self.pos
+#             source: "backgroundMenu.png"
+#         Rectangle:
+#             size: self.width, 138
+#             pos: self.pos[0], self.pos[1] + self.height -138
+#             texture: self.dice_texture
+#         Rectangle:
+#             size: self.width, 500
+#             pos: self.pos[0], self.pos[1]
+#             texture: self.points_texture
 
 
+<Button>:
+    font_name: 'Arial'
+    font_size: 45
+    bold: True
+    color: 0, 1, 0, 1
+    size_hint: 0.3,0.2
+    background_normal: 'leather.png'
+    background_down: 'downleather.png'
+    
+
+
+
+<ScreenMenu>:
+    FloatLayout:
+        BoxLayout:
+            orientation: "vertical"
+            BoxLayout:
+                Button:
+                    pos_hint:{"top": 1,"left": 1}
+                    text: "Need Help?"
+                    
+                    on_press:
+                        # You can define the duration of the change
+                        # and the direction of the slide
+                        root.manager.transition.direction = 'right'
+                        root.manager.transition.duration = 1
+                        root.manager.current = 'screen_help'
+                        
+                
+     
+                Button:
+                    pos_hint:{"top": 1,"right": 1}
+                    text: "Play Backgammon?"
+                    
+                    on_press:
+                        # You can define the duration of the change
+                        # and the direction of the slide
+                        root.manager.transition.direction = 'left'
+                        root.manager.transition.duration = 1
+                        root.manager.current = 'screen_game'
+                    
+                Button:
+                    pos_hint:{"top": 1,"right": 2}
+                    text: "Scores"
+                    
+                    on_press:
+                        # You can define the duration of the change
+                        # and the direction of the slide
+                        root.manager.transition.direction = 'up'
+                        root.manager.transition.duration = 1
+                        root.manager.current = 'screen_scores'
+                
+                Button:
+                    pos_hint:{"top": 1,"left": 2}
+                    text: "QUIT?"
+                    
+                    on_press:
+                        exit()
+        
+
+<ScreenGame>:
+    BoxLayout:
+        Button:
+            text: "Main Menu"
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'screen_menu'
+        Button:
+            text: "Quit"
+            on_press:
+                exit()
+                
+<ScreenHelp>:
+    BoxLayout:
+        Button:
+            text: "Main Menu"
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'screen_menu'        
+                
+                
+                
+<ScreenScores>:
+    BoxLayout:
+        Button:
+            text: "Main Menu"
+            on_press:
+                root.manager.transition.direction = 'down'
+                root.manager.current = 'screen_menu'             
+""")
 class Background(Widget):
     dice_texture = ObjectProperty(None)
     points_texture = ObjectProperty(None)
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -25,12 +144,13 @@ class Background(Widget):
         self.points_texture.wrap = 'repeat'
         self.points_texture.uvsize = (Window.width / self.dice_texture.width, -1)
 
+
     def scroll_textures(self, time_passed):
         # update the uvpos
         self.dice_texture.uvpos = (
-        (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
+            (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
         self.points_texture.uvpos = (
-        (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
+            (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
         # Redraw the texture
         texture = self.property("dice_texture")
         texture.dispatch(self)
@@ -38,72 +158,42 @@ class Background(Widget):
         texture = self.property("points_texture")
         texture.dispatch(self)
 
+
     pass
 
 
-from kivy.clock import Clock
+# Create a class for all screens in which you can include
+# helpful methods specific to that screen
+class ScreenMenu(Screen):
+    pass
+
+class ScreenGame(Screen):
+    pass
+
+class ScreenHelp(Screen):
+    pass
+
+class ScreenScores(Screen):
+    pass
 
 
-class ButtonApp(App):
+# The ScreenManager controls moving between screens
+screen_manager = ScreenManager()
+
+# Add the screens to the manager and then supply a name
+# that is used to switch screens
+screen_manager.add_widget(ScreenMenu(name="screen_menu"))
+screen_manager.add_widget(ScreenGame(name="screen_game"))
+screen_manager.add_widget(ScreenHelp(name="screen_help"))
+screen_manager.add_widget(ScreenScores(name="screen_scores"))
+
+
+class Backgammon(App):
+    # def on_start(self):
+    #     Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
 
     def build(self):
-        # use a (r, g, b, a) tuple
-        start = Widget()
+        return screen_manager
 
-        startButton = Button(text="Start",
-                             font_size="20sp",
-                             background_color=(1, 1, 1, 1),
-                             color=(1, 1, 1, 1),
-                             size=(100, 75),
-                             size_hint=(.2, .2),
-                             pos=(Window.width / 2 - 50, Window.height / 2 + 50))
-
-        helpButton = Button(text="Help",
-                            font_size="20sp",
-                            background_color=(1, 1, 1, 1),
-                            color=(1, 1, 1, 1),
-                            size=(100, 75),
-                            size_hint=(.2, .2),
-                            pos=(Window.width / 2 - 50, Window.height / 2 - 50))
-
-        exitButton = Button(text="Exit",
-                            font_size="20sp",
-                            background_color=(1, 1, 1, 1),
-                            color=(1, 1, 1, 1),
-                            size=(100, 75),
-                            size_hint=(.2, .2),
-                            pos=(Window.width / 2 - 50, Window.height / 2 - 150))
-
-        start.add_widget(startButton)
-        start.add_widget(helpButton)
-        start.add_widget(exitButton)
-
-        # bind() use to bind the button to function callback
-        startButton.bind(on_press=self.startGame)
-        helpButton.bind(on_press=self.helpPage)
-        exitButton.bind(on_press=self.exitGame)
-
-        return start
-
-    # # callback function tells when button pressed
-    def startGame(self, event):
-        print("You started the game!")
-
-    def helpPage(self, event):
-        print("Heading to the help page")
-
-    def exitGame(self, event):
-        exit()
-
-
-
-class MainApp(App):
-    def on_start(self):
-        Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
-        root = ButtonApp()
-        root.run()
-
-    pass
-
-
-MainApp().run()
+app = Backgammon()
+app.run()
