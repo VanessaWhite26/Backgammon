@@ -11,6 +11,9 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
+from kivy.uix.scrollview import ScrollView
+from kivy.properties import StringProperty
+from kivy.base import runTouchApp
 from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.label import Label
@@ -25,7 +28,7 @@ Config.set('graphics', 'height', '750')
 Window.size = (1000, 750)
 ##----------------------------------------------------------------------------------------------------------------------
 # You can create your kv code in the Python file
-Builder.load_string("""
+root = Builder.load_string("""
 
 # 
 # Background: 
@@ -118,23 +121,23 @@ Builder.load_string("""
             on_press:
                 exit()
                 
-<ScreenHelp>:
-
-    Label: 
-        text:  ' Game Instructions: \\n Every roll presents the opportunity to move towards pieces to the end of the board \\n Each player must roll two dice:' 
-            # 'If the dice is not a 'doubles' then only two moves are allowed one for each number on the dice '
-            # If the dice roll is a 'doubles' meaning both of the dice have the same number then four moves of that number on the dice is allowed  
-            # *No player is allowed to 'pass' or not use their moves (there must be a move made every turn if possible)"
-                          
+<ScreenHelp>:                          
+                 
+    ScrollView:
+        Label:        
+            size_hint: None, None
+            size: self.texture_size
+            text: ' Game Instructions: \\n Every roll presents the opportunity to move towards pieces to the end of the board \\n Each player must roll two dice:' * 50    
+                # 'If the dice is not a 'doubles' then only two moves are allowed one for each number on the dice '
+                # If the dice roll is a 'doubles' meaning both of the dice have the same number then four moves of that number on the dice is allowed  
+                # *No player is allowed to 'pass' or not use their moves (there must be a move made every turn if possible)"
+    
     BoxLayout:
         Button:
             text: "Main Menu"
             on_press:
                 root.manager.transition.direction = 'left'
-                root.manager.current = 'screen_menu'    
-                
-                                   
-                
+                root.manager.current = 'screen_menu'            
                 
                 
 <ScreenScores>:
@@ -213,6 +216,7 @@ class Backgammon(App):
 
     def build(self):
         return screen_manager
+
 
 app = Backgammon()
 app.run()
