@@ -30,26 +30,7 @@ Builder.load_string("""
 
 <ScreenMenu>:
 
-    FloatLayout:
-        Background: 
-            id: background
-            canvas.before:
-                Rectangle:
-                    size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -400
-                    texture: self.dice_texture
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-                    source: "backgroundMenu.png"
-                Rectangle:
-                    size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -400
-                    texture: self.dice_texture
-                Rectangle:
-                    size: self.width, 500
-                    pos: self.pos[0], self.pos[1]
-                    texture: self.points_texture
+    
     FloatLayout:
         BoxLayout:
             orientation: "vertical"
@@ -112,6 +93,26 @@ Builder.load_string("""
                 exit()
 
 <ScreenHelp>:
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                Rectangle:
+                    size: self.width, 138
+                    pos: self.pos[0], self.pos[1] + self.height -400
+                    texture: self.dice_texture
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "backgroundMenu.png"
+                Rectangle:
+                    size: self.width, 138
+                    pos: self.pos[0], self.pos[1] + self.height -950
+                    texture: self.dice_texture
+                Rectangle:
+                    size: self.width, 500
+                    pos: self.pos[0], self.pos[1] + self.height -300
+                    texture: self.points_texture
     BoxLayout:
         Button:
             text: "Main Menu"
@@ -147,18 +148,22 @@ class Background(Widget):
         self.points_texture.wrap = 'repeat'
         self.points_texture.uvsize = (Window.width / self.dice_texture.width, -1)
     #
-    # def scroll_textures(self, time_passed):
-    #     # update the uvpos
-    #     self.dice_texture.uvpos = (
-    #         (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
-    #     self.points_texture.uvpos = (
-    #         (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
-    #     # Redraw the texture
-    #     texture = self.property("dice_texture")
-    #     texture.dispatch(self)
-    #
-    #     texture = self.property("points_texture")
-    #     texture.dispatch(self)
+    def scroll_textures(self, time_passed):
+        # update the uvpos
+        self.dice_texture.uvpos = (
+            (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
+        self.points_texture.uvpos = (
+            (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
+        # Redraw the texture
+        texture = self.property("dice_texture")
+        texture.dispatch(self)
+
+        texture = self.property("points_texture")
+        texture.dispatch(self)
+
+    def on_start(self):
+        Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
+
     pass
 
 # Create a class for all screens in which you can include
@@ -199,8 +204,7 @@ class Backgammon(App):
     def build(self):
         return screen_manager
 
-    # def on_start(self):
-    #     Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
+
     pass
 
 
