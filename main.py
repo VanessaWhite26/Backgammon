@@ -13,9 +13,17 @@ from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.uix.button import Button
+from kivy.uix.label import Label
+
 import kivy
 from kivy.clock import Clock
-
+from kivy.config import Config
+from kivy.core.window import Window
+##----------------------------------------------------------------------------------------------------------------------
+Config.set('graphics', 'width', '1000')
+Config.set('graphics', 'height', '750')
+Window.size = (1000, 750)
+##----------------------------------------------------------------------------------------------------------------------
 # You can create your kv code in the Python file
 Builder.load_string("""
 
@@ -39,7 +47,7 @@ Builder.load_string("""
 
 <Button>:
     font_name: 'Arial'
-    font_size: 45
+    font_size: 25
     bold: True
     color: 0, 1, 0, 1
     size_hint: 0.3,0.2
@@ -50,6 +58,7 @@ Builder.load_string("""
 
 
 <ScreenMenu>:
+    
     FloatLayout:
         BoxLayout:
             orientation: "vertical"
@@ -110,12 +119,21 @@ Builder.load_string("""
                 exit()
                 
 <ScreenHelp>:
+
+    Label: 
+        text:  ' Game Instructions: \\n Every roll presents the opportunity to move towards pieces to the end of the board \\n Each player must roll two dice:' 
+            # 'If the dice is not a 'doubles' then only two moves are allowed one for each number on the dice '
+            # If the dice roll is a 'doubles' meaning both of the dice have the same number then four moves of that number on the dice is allowed  
+            # *No player is allowed to 'pass' or not use their moves (there must be a move made every turn if possible)"
+                          
     BoxLayout:
         Button:
             text: "Main Menu"
             on_press:
                 root.manager.transition.direction = 'left'
-                root.manager.current = 'screen_menu'        
+                root.manager.current = 'screen_menu'    
+                
+                                   
                 
                 
                 
@@ -127,6 +145,8 @@ Builder.load_string("""
                 root.manager.transition.direction = 'down'
                 root.manager.current = 'screen_menu'             
 """)
+
+##----------------------------------------------------------------------------------------------------------------------
 class Background(Widget):
     dice_texture = ObjectProperty(None)
     points_texture = ObjectProperty(None)
@@ -157,11 +177,9 @@ class Background(Widget):
 
         texture = self.property("points_texture")
         texture.dispatch(self)
-
-
     pass
 
-
+##----------------------------------------------------------------------------------------------------------------------
 # Create a class for all screens in which you can include
 # helpful methods specific to that screen
 class ScreenMenu(Screen):
@@ -176,7 +194,7 @@ class ScreenHelp(Screen):
 class ScreenScores(Screen):
     pass
 
-
+##----------------------------------------------------------------------------------------------------------------------
 # The ScreenManager controls moving between screens
 screen_manager = ScreenManager()
 
@@ -187,6 +205,7 @@ screen_manager.add_widget(ScreenGame(name="screen_game"))
 screen_manager.add_widget(ScreenHelp(name="screen_help"))
 screen_manager.add_widget(ScreenScores(name="screen_scores"))
 
+##----------------------------------------------------------------------------------------------------------------------
 
 class Backgammon(App):
     # def on_start(self):
