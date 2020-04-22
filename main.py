@@ -11,10 +11,11 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty
 from kivy.uix.image import Image
+from kivy.core.window import Window
 from kivy.uix.scrollview import ScrollView
 from kivy.properties import StringProperty
 from kivy.base import runTouchApp
-from kivy.core.window import Window
+
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 
@@ -28,25 +29,11 @@ Config.set('graphics', 'height', '750')
 Window.size = (1000, 750)
 ##----------------------------------------------------------------------------------------------------------------------
 # You can create your kv code in the Python file
-root = Builder.load_string("""
+Builder.load_string("""
 
-# 
-# Background: 
-#     id: background
-#     canvas.before:
-#         Rectangle:
-#             size: self.size
-#             pos: self.pos
-#             source: "backgroundMenu.png"
-#         Rectangle:
-#             size: self.width, 138
-#             pos: self.pos[0], self.pos[1] + self.height -138
-#             texture: self.dice_texture
-#         Rectangle:
-#             size: self.width, 500
-#             pos: self.pos[0], self.pos[1]
-#             texture: self.points_texture
 
+
+         
 
 <Button>:
     font_name: 'Arial'
@@ -61,6 +48,15 @@ root = Builder.load_string("""
 
 
 <ScreenMenu>:
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "menuBackground.png"
     
     FloatLayout:
         BoxLayout:
@@ -107,9 +103,34 @@ root = Builder.load_string("""
                     
                     on_press:
                         exit()
-        
+    
+    
+    
+    
+
+                
 
 <ScreenGame>:
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                Rectangle:
+                    size: self.width, 138
+                    pos: self.pos[0], self.pos[1] + self.height -400
+                    texture: self.dice_texture
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "backgroundMenu.png"
+                Rectangle:
+                    size: self.width, 138
+                    pos: self.pos[0], self.pos[1] + self.height -950
+                    texture: self.dice_texture
+                Rectangle:
+                    size: self.width, 500
+                    pos: self.pos[0], self.pos[1] + self.height -300
+                    texture: self.points_texture
     BoxLayout:
         Button:
             text: "Main Menu"
@@ -120,27 +141,54 @@ root = Builder.load_string("""
             text: "Quit"
             on_press:
                 exit()
-                
-<ScreenHelp>:                          
-                 
-    ScrollView:
-        Label:        
-            size_hint: None, None
-            size: self.texture_size
-            text: ' Game Instructions: \\n Every roll presents the opportunity to move towards pieces to the end of the board \\n Each player must roll two dice:' * 50    
-                # 'If the dice is not a 'doubles' then only two moves are allowed one for each number on the dice '
-                # If the dice roll is a 'doubles' meaning both of the dice have the same number then four moves of that number on the dice is allowed  
-                # *No player is allowed to 'pass' or not use their moves (there must be a move made every turn if possible)"
+
+<ScreenHelp>:
+     ScrollView:
+            Label:        
+                size_hint: None, None
+                size: self.texture_size
+                text: ' Game Instructions: \\n Every roll presents the opportunity to move towards pieces to the end of the board \\n Each player must roll two dice:' * 50    
+                    # 'If the dice is not a 'doubles' then only two moves are allowed one for each number on the dice '
+                    # If the dice roll is a 'doubles' meaning both of the dice have the same number then four moves of that number on the dice is allowed  
+                    # *No player is allowed to 'pass' or not use their moves (there must be a move made every turn if possible)"
     
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "backgroundMenu.png"
+                Rectangle:
+                    size: self.width, 138
+                    pos: self.pos[0], self.pos[1] + self.height -950
+                    texture: self.dice_texture
+                Rectangle:
+                    size: self.width, 500
+                    pos: self.pos[0], self.pos[1] + self.height -300
+                    texture: self.points_texture
     BoxLayout:
         Button:
             text: "Main Menu"
             on_press:
                 root.manager.transition.direction = 'left'
-                root.manager.current = 'screen_menu'            
-                
-                
+                root.manager.current = 'screen_menu'        
+
+
+
 <ScreenScores>:
+    
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "roll.png"
     BoxLayout:
         Button:
             text: "Main Menu"
@@ -180,7 +228,14 @@ class Background(Widget):
 
         texture = self.property("points_texture")
         texture.dispatch(self)
+
+    def on_start(self):
+        Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
+
     pass
+
+
+
 
 ##----------------------------------------------------------------------------------------------------------------------
 # Create a class for all screens in which you can include
@@ -197,7 +252,7 @@ class ScreenHelp(Screen):
 class ScreenScores(Screen):
     pass
 
-##----------------------------------------------------------------------------------------------------------------------
+
 # The ScreenManager controls moving between screens
 screen_manager = ScreenManager()
 
@@ -208,7 +263,6 @@ screen_manager.add_widget(ScreenGame(name="screen_game"))
 screen_manager.add_widget(ScreenHelp(name="screen_help"))
 screen_manager.add_widget(ScreenScores(name="screen_scores"))
 
-##----------------------------------------------------------------------------------------------------------------------
 
 class Backgammon(App):
     # def on_start(self):
@@ -216,6 +270,9 @@ class Backgammon(App):
 
     def build(self):
         return screen_manager
+
+
+    pass
 
 
 app = Backgammon()
