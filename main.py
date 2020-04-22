@@ -29,7 +29,15 @@ Builder.load_string("""
     background_down: 'downleather.png'
 
 <ScreenMenu>:
-
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "menuBackground.png"
     
     FloatLayout:
         BoxLayout:
@@ -63,7 +71,7 @@ Builder.load_string("""
                     on_press:
                         # You can define the duration of the change
                         # and the direction of the slide
-                        root.manager.transition.direction = 'up'
+                        root.manager.transition.direction = 'down'
                         root.manager.transition.duration = 1
                         root.manager.current = 'screen_scores'
 
@@ -81,18 +89,6 @@ Builder.load_string("""
                 
 
 <ScreenGame>:
-    BoxLayout:
-        Button:
-            text: "Main Menu"
-            on_press:
-                root.manager.transition.direction = 'right'
-                root.manager.current = 'screen_menu'
-        Button:
-            text: "Quit"
-            on_press:
-                exit()
-
-<ScreenHelp>:
     FloatLayout:
         Background: 
             id: background
@@ -117,17 +113,56 @@ Builder.load_string("""
         Button:
             text: "Main Menu"
             on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'screen_menu'
+        Button:
+            text: "Quit"
+            on_press:
+                exit()
+
+<ScreenHelp>:
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "backgroundMenu.png"
+                Rectangle:
+                    size: self.width, 138
+                    pos: self.pos[0], self.pos[1] + self.height -950
+                    texture: self.dice_texture
+                Rectangle:
+                    size: self.width, 500
+                    pos: self.pos[0], self.pos[1] + self.height -300
+                    texture: self.points_texture
+    BoxLayout:
+        Button:
+            text: "Main Menu"
+            on_press:
                 root.manager.transition.direction = 'left'
                 root.manager.current = 'screen_menu'        
 
 
 
 <ScreenScores>:
+    
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "roll.png"
     BoxLayout:
         Button:
             text: "Main Menu"
             on_press:
-                root.manager.transition.direction = 'down'
+                root.manager.transition.direction = 'up'
                 root.manager.current = 'screen_menu'             
 """)
 
@@ -135,6 +170,7 @@ Builder.load_string("""
 class Background(Widget):
     dice_texture = ObjectProperty(None)
     points_texture = ObjectProperty(None)
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -165,6 +201,9 @@ class Background(Widget):
         Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
 
     pass
+
+
+
 
 # Create a class for all screens in which you can include
 # helpful methods specific to that screen
