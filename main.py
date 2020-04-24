@@ -1,4 +1,5 @@
 import kivy
+from kivy.uix.stacklayout import StackLayout
 
 kivy.require('1.9.0')
 
@@ -32,14 +33,16 @@ Builder.load_string("""
 
 
 
+
          
 
 <Button>:
     font_name: 'Arial'
-    font_size: 25
+    font_size: 45
     bold: True
     color: 0, 1, 0, 1
     size_hint: 0.3,0.2
+    size: self.texture_size
     background_normal: 'leather.png'
     background_down: 'downleather.png'
     
@@ -105,22 +108,31 @@ Builder.load_string("""
         
 
 <ScreenGame>:
-    FloatLayout:
-        Background: 
-            id: background
-            canvas.before:
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-                    source: "backgroundMenu.png"
-                Rectangle:
-                    size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -1200
-                    texture: self.dice_texture
-                Rectangle:
-                    size: self.width, 500
-                    pos: self.pos[0], self.pos[1] + self.height -300
-                    texture: self.points_texture
+    # FloatLayout:
+    #     Background: 
+    #         id: background
+    #         canvas.before:
+    #             Rectangle:
+    #                 size: self.size
+    #                 pos: self.pos
+    #                 source: "backgroundMenu.png"
+    #             Rectangle:
+    #                 size: self.width, 138
+    #                 pos: self.pos[0], self.pos[1] + self.height -1200
+    #                 texture: self.dice_texture
+    #             Rectangle:
+    #                 size: self.width, 500
+    #                 pos: self.pos[0], self.pos[1] + self.height -300
+    #                 texture: self.points_texture
+    
+    Board: 
+        id: board
+        canvas.before:
+            Rectangle:
+                size: self.size
+                pos: self.pos
+                source: "points.png"
+        
     BoxLayout:
         Button:
             text: "Main Menu"
@@ -143,13 +155,10 @@ Builder.load_string("""
                     source: "backgroundMenu.png"     
                 Rectangle:
                     size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -1200
+                    pos: self.pos[0], self.pos[1] + self.height -138
                     texture: self.dice_texture
                
-                Rectangle:
-                    size: self.width, 500
-                    pos: self.pos[0], self.pos[1] + self.height -300
-                    texture: self.points_texture         
+                        
                 
             
         
@@ -236,6 +245,24 @@ Builder.load_string("""
 """)
 
 ##----------------------------------------------------------------------------------------------------------------------
+class Board(Widget):
+
+    board = []
+
+    def build(self):
+        # Config.set('graphics', 'width', '600')
+        # Config.set('graphics', 'height', '600')
+        self.layout = StackLayout()
+        for x in range(3):
+            bt = Button(text='', font_size=200, width=200, height=200, size_hint=(None, None), id=str(x))
+            bt.bind(on_release=self.btn_pressed)
+            self.board.append(bt)
+            self.layout.add_widget(bt)
+        return self.layout
+
+
+
+
 class Background(Widget):
     dice_texture = ObjectProperty(None)
     points_texture = ObjectProperty(None)
@@ -256,7 +283,7 @@ class Background(Widget):
     def scroll_textures(self, time_passed):
         # update the uvpos
         self.dice_texture.uvpos = (
-            (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[1])
+            (self.dice_texture.uvpos[0] + time_passed) % Window.width, self.dice_texture.uvpos[0])
         self.points_texture.uvpos = (
             (self.points_texture.uvpos[0] - time_passed) % Window.width, self.points_texture.uvpos[1])
         # Redraw the texture
