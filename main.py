@@ -132,7 +132,7 @@ Builder.load_string("""
                     on_press:
                         # You can define the duration of the change
                         # and the direction of the slide
-                        root.manager.transition.direction = 'up'
+                        root.manager.transition.direction = 'down'
                         root.manager.transition.duration = 1
                         root.manager.current = 'screen_scores'
                 
@@ -149,10 +149,6 @@ Builder.load_string("""
         Background: 
             id: background
             canvas.before:
-                Rectangle:
-                    size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -400
-                    texture: self.dice_texture
                 Rectangle:
                     size: self.size
                     pos: self.pos
