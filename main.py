@@ -199,7 +199,7 @@ Builder.load_string("""
             bold: True
             color: 0, 1, 0, 1
 
-            text: "Let's Play!"
+            text: "Let's Play!"              
             
         TextInput:
             id: userinput
@@ -215,6 +215,7 @@ Builder.load_string("""
            # when user presses enter:  
             on_text_validate:
                 app.getUserInput(userinput)
+                app.changeLabelText(outlabel, "test")
 
         Button:
             font_name: 'Arial'
@@ -389,6 +390,9 @@ class Backgammon(App):
 
     def getUserInput(self,TextInput):
         print(TextInput.text)
+
+    def changeLabelText(self, Label, newLabel):
+        Label.text = newLabel
 
 
 app = Backgammon()
