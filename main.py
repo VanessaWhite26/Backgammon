@@ -193,19 +193,28 @@ Builder.load_string("""
         size_hint: 1,0.25
         rows:2
         Label:
+            id: outlabel
             font_name: 'Arial'
             font_size: 25
             bold: True
             color: 0, 1, 0, 1
 
             text: "Let's Play!"
+            
         TextInput:
+            id: userinput
+            multiline: False
+            
             font_name: 'Arial'
             font_size: 25
             bold: True
             color: 0, 1, 0, 1
 
             text: "User Input "
+           
+           # when user presses enter:  
+            on_text_validate:
+                app.getUserInput(userinput)
 
         Button:
             font_name: 'Arial'
@@ -220,6 +229,7 @@ Builder.load_string("""
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.current = 'screen_menu'
+                
         Button:
             # pos: 500,656.25
             # size_hint: 0.5,0.125
@@ -376,6 +386,9 @@ class Backgammon(App):
         return screen_manager
 
     pass
+
+    def getUserInput(self,TextInput):
+        print(TextInput.text)
 
 
 app = Backgammon()
