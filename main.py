@@ -17,6 +17,7 @@ from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
+from kivy.graphics import *
 
 import kivy
 from kivy.clock import Clock
@@ -166,28 +167,6 @@ Builder.load_string("""
 
 
 <ScreenGame>:
-    FloatLayout:
-        Background: 
-            id: background
-            canvas.before:
-                Rectangle:
-                    size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -400
-                    texture: self.dice_texture
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-                    source: "backgroundMenu.png"
-                Rectangle:
-                    size: self.width, 138
-                    pos: self.pos[0], self.pos[1] + self.height -950
-                    texture: self.dice_texture
-                Rectangle:
-                    size: self.width, 500
-                    pos: self.pos[0], self.pos[1] + self.height -300
-                    texture: self.points_texture
-
-
     GridLayout:
         cols:2
         size_hint: 1,0.25
@@ -232,8 +211,13 @@ Builder.load_string("""
                 root.manager.current = 'screen_menu'
                 
         Button:
-            # pos: 500,656.25
-            # size_hint: 0.5,0.125
+            font_name: 'Arial'
+            font_size: 25
+            bold: True
+            color: 0, 1, 0, 1 
+            background_normal: 'leather.png'
+            background_down: 'downleather.png'
+
             text: "Quit"
             on_press:
                 exit()
@@ -266,11 +250,6 @@ Builder.load_string("""
             MyInstructions:
 
 
-
-
-
-
-
     BoxLayout:
         Button:
             font_name: 'Arial'
@@ -286,7 +265,6 @@ Builder.load_string("""
                 root.manager.current = 'screen_menu'        
 
 <ScreenScores>:
-
     FloatLayout:
         Background: 
             id: background
