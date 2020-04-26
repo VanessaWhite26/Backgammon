@@ -1,9 +1,9 @@
 import kivy
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.stacklayout import StackLayout
 
 kivy.require('1.9.0')
-
-
+import os
 from kivy.app import App
 from kivy.core.audio import SoundLoader
 from kivy.lang import Builder
@@ -31,11 +31,6 @@ Window.size = (1000, 750)
 # You can create your kv code in the Python file
 Builder.load_string("""
 
-
-
-
-         
-
 <Button>:
     font_name: 'Arial'
     font_size: 45
@@ -46,9 +41,7 @@ Builder.load_string("""
     background_normal: 'leather.png'
     background_down: 'downleather.png'
     
-
-
-
+    
 <ScreenMenu>:
     FloatLayout:
         Background: 
@@ -66,7 +59,7 @@ Builder.load_string("""
             BoxLayout:
                 Button:
                     pos_hint:{"top": 1,"left": 1}
-                    text: "Need Help?"
+                    text: "Help"
                     
                     on_press:
                         # You can define the duration of the change
@@ -79,7 +72,7 @@ Builder.load_string("""
      
                 Button:
                     pos_hint:{"top": 1,"right": 1}
-                    text: "Play Backgammon?"
+                    text: "Backgammon"
                     
                     on_press:
                         # You can define the duration of the change
@@ -101,37 +94,40 @@ Builder.load_string("""
                 
                 Button:
                     pos_hint:{"top": 1,"left": 2}
-                    text: "QUIT?"
+                    text: "Quit"
                     
                     on_press:
                         exit()
         
 
-<ScreenGame>:
-    # FloatLayout:
-    #     Background: 
-    #         id: background
-    #         canvas.before:
-    #             Rectangle:
-    #                 size: self.size
-    #                 pos: self.pos
-    #                 source: "backgroundMenu.png"
-    #             Rectangle:
-    #                 size: self.width, 138
-    #                 pos: self.pos[0], self.pos[1] + self.height -1200
-    #                 texture: self.dice_texture
-    #             Rectangle:
-    #                 size: self.width, 500
-    #                 pos: self.pos[0], self.pos[1] + self.height -300
-    #                 texture: self.points_texture
-    
+<ScreenGame>:        
+        # Rectangle:
+        #     size: self.size
+        #     pos: self.pos
+        #     source: "backgroundMenu.png"
+        # Rectangle:
+        #     size: self.width, 138
+        #     pos: self.pos[0], self.pos[1] + self.height -1200
+        #     texture: self.dice_texture
+        # Rectangle:
+        #     size: self.width, 500
+        #     pos: self.pos[0], self.pos[1] + self.height -300
+        #     texture: self.points_texture
+
+
     Board: 
-        id: board
-        canvas.before:
-            Rectangle:
-                size: self.size
-                pos: self.pos
-                source: "points.png"
+        # id: board
+        # canvas.before:
+        #     Rectangle:
+        #         size: self.size
+        #         pos: self.pos
+        #         source: "points.png"
+        
+        
+
+                
+    
+    
         
     BoxLayout:
         Button:
@@ -139,10 +135,18 @@ Builder.load_string("""
             on_press:
                 root.manager.transition.direction = 'right'
                 root.manager.current = 'screen_menu'
+        
+        Button:
+            text: "Help"
+            on_press:
+                root.manager.transition.direction = 'left'
+                root.manager.current = 'screen_help'       
+    
         Button:
             text: "Quit"
             on_press:
                 exit()
+                
                 
 <ScreenHelp>:
     FloatLayout:
@@ -159,10 +163,6 @@ Builder.load_string("""
                     texture: self.dice_texture
                
                         
-                
-            
-        
-        
         ScrollView:
             do_scroll_x: False
             do_scroll_y: True
@@ -211,19 +211,24 @@ Builder.load_string("""
                     
                    #Instructions from https://www.mastersofgames.com/rules/backgammon-rules.htm   
         
-            
-                                          
-                    
-        
-     
-   
     
     BoxLayout:
         Button:
             text: "Main Menu"
             on_press:
                 root.manager.transition.direction = 'left'
-                root.manager.current = 'screen_menu'        
+                root.manager.current = 'screen_menu'
+        
+        Button:
+            text: "Backgammon"
+            on_press:
+                root.manager.transition.direction = 'right'
+                root.manager.current = 'screen_game' 
+                
+        Button:
+            text: "Quit"
+            on_press:
+                exit()         
 
 <ScreenScores>:
     
@@ -247,19 +252,8 @@ Builder.load_string("""
 ##----------------------------------------------------------------------------------------------------------------------
 class Board(Widget):
 
-    board = []
-
     def build(self):
-        # Config.set('graphics', 'width', '600')
-        # Config.set('graphics', 'height', '600')
-        self.layout = StackLayout()
-        for x in range(3):
-            bt = Button(text='', font_size=200, width=200, height=200, size_hint=(None, None), id=str(x))
-            bt.bind(on_release=self.btn_pressed)
-            self.board.append(bt)
-            self.layout.add_widget(bt)
-        return self.layout
-
+        os.system('Backgammon.py')
 
 
 
