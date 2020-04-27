@@ -173,7 +173,7 @@ Builder.load_string("""
 <ScreenGame>:
     GridLayout:
         cols:2
-        size_hint: 1,0.35
+        size_hint: 1,0.4
         rows:3
         
         Label:
