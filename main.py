@@ -24,7 +24,7 @@ from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.window import Window
 
-import numpy
+
 from random import randint
 import time
 
@@ -173,8 +173,28 @@ Builder.load_string("""
 <ScreenGame>:
     GridLayout:
         cols:2
-        size_hint: 1,0.25
-        rows:2
+        size_hint: 1,0.35
+        rows:3
+        
+        Label:
+            id: board
+            font_name: 'Arial'
+            font_size: 25
+            bold: True
+            color: 0, 1, 0, 1
+            
+            text: "Board array here"
+            
+        Label:
+            id: bar
+            font_name: 'Arial'
+            font_size: 25
+            bold: True
+            color: 0, 1, 0, 1
+            
+            text: "Bar array here"
+        
+        
         Label:
             id: outlabel
             font_name: 'Arial'
