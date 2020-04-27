@@ -48,6 +48,8 @@ def roll():
 def makeMoves(moves):
   while(numpy.sum(moves)>0):
     move_valid = False
+    rand_index = 0
+    rand_move = 0
 
     possible_moves = 0
     if turn ==1:
@@ -57,15 +59,49 @@ def makeMoves(moves):
             if board[i]>0 and board[i + moves[j]]>-2 :
               possible_moves = possible_moves+1
     elif turn ==-1:
+      #for i in range(25):
+      #  for j in range (4):
+      #    if moves[j]>0 and i - moves[j]>0:
+      #      if board[i]<0 and board[i - moves[j]]<2:
+      #        possible_moves = possible_moves+1
       for i in range(25):
         for j in range (4):
           if moves[j]>0 and i - moves[j]>0:
             if board[i]<0 and board[i - moves[j]]<2:
               possible_moves = possible_moves+1
+
+      #randomizes dark peice move for primative AI
+      if possible_moves >0:
+        picked_space = False
+        while picked_space == False:
+          rand_index = randint(1, 24)
+          rand_move = randint(0, 3)
+          
+          spot_check = board[rand_index - moves[rand_move]]<2 and board[rand_index]<0 and rand_index-moves[rand_move]> 1
+          check = 0
+
+          #while moves[rand_move] == 0 and spot_check == False and  and rand_index-rand_move< 1:
+          while moves[rand_move] == 0 or spot_check == False:
+            rand_move = randint(0, 3)
+            rand_index = randint(1, 24)
+            #spot_check =board[rand_index]<0 and board[rand_index - moves[rand_move]]<2
+            spot_check = board[rand_index - moves[rand_move]]<2 and board[rand_index]<0 and rand_index-moves[rand_move]> 1
+            print ("check: "+ str(check))
+            check =check+1
+          
+          
+          #if board[rand_index]<0 and board[rand_index - moves[rand_move]]<2:
+          picked_space = True
+          move = moves[rand_move]
+          moves[rand_move] = 0
+              
     print(possible_moves)
 
     if possible_moves >0:
-      while(move_valid == False):
+
+      
+
+      while(move_valid == False and turn ==1):
         #print(moves)
         move = int(input("Which move would you like to take? "))
         for i in range(0,4):
@@ -76,7 +112,7 @@ def makeMoves(moves):
         if (move_valid == False):
           print("Move invalid, please try again")
   
-      movePiece(move,turn)
+      movePiece(move,turn,rand_index)
     else:
         print("No possible moves, turn over")
 
@@ -217,7 +253,9 @@ def movePiece(move,turn):
 #Prototyping possible move check
 
 #player movement and verification
-def movePiece(move,turn):
+def movePiece(move,turn,rand_index):
+  print("Rand_index:" + str(rand_index))
+  print("move:" + str(move))
   if(turn == 1):
 
     if center_bar[0] >0:
@@ -269,10 +307,12 @@ def movePiece(move,turn):
       print(board)
       print(center_bar)
   elif(turn == -1):
+    
     if center_bar[1] <0:
       origin_index = 25
     else:
-      origin_index = int(input("What space would you like to move from? ")) 
+      #origin_index = int(input("What space would you like to move from? ")) \
+      origin_index = rand_index
 
     #origin validity check
     while(board[origin_index]>-1):
