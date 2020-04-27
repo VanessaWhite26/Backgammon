@@ -13,17 +13,19 @@ from random import randint
 import time
 
 #create board
+#def initialize():
 light_zone = 0 #positive endzone
 dark_zone = 0 #negative endzone
 center_bar = [0, 0] #first num is positives on bar, second is negatives
 
 
 #Initialize board, positive nums are light peices, negative nums are dark peices
-board = [2,0,0,0,0,-5,   0,-3,0,0,0,5,
-         -5,0,0,0,3,0,   5,0,0,0,0,-2]
+board = [0,   2,0,0,0,0,-5,   0,-3,0,0,0,5,
+          -5,0,0,0,3,0,   5,0,0,0,0,-2,   0]
 
 print(board)
 print(numpy.sum(board))
+#return board
 
 #rolls dice and interprets move options
 def roll():
@@ -40,92 +42,178 @@ def roll():
     moves[3]=dice1
   else:
     print('you get one move of ' +str(dice1)+ ' and one move of ' +str(dice2))
-
-  print(moves)
+  return moves
 
 #makes moves
-def makeMoves():
-while(numpy.sum(moves)>0):
-  move_valid = False
-  while(move_valid == False):
-    move = int(input("Which move would you like to take? "))
-    for i in range(0,3):
-      if (moves[i]== move):
-        moves[i] = 0
-        move_valid = True
-    if (move_valid == False):
-      print("Mo")
-  
-  movePiece(move,turn)
+def makeMoves(moves):
+  while(numpy.sum(moves)>0):
+    move_valid = False
+    rand_index = 0
+    rand_move = 0
+
+    possible_moves = 0
+    if turn ==1:
+      for i in range(25):
+        for j in range (4):
+          if moves[j]>0and i + moves[j]<25:
+            if board[i]>0 and board[i + moves[j]]>-2 :
+              possible_moves = possible_moves+1
+    elif turn ==-1:
+      #for i in range(25):
+      #  for j in range (4):
+      #    if moves[j]>0 and i - moves[j]>0:
+      #      if board[i]<0 and board[i - moves[j]]<2:
+      #        possible_moves = possible_moves+1
+      for i in range(25):
+        for j in range (4):
+          if moves[j]>0 and i - moves[j]>0:
+            if board[i]<0 and board[i - moves[j]]<2:
+              possible_moves = possible_moves+1
+
+      #randomizes dark peice move for primative AI
+      if possible_moves >0:
+        picked_space = False
+        while picked_space == False:
+          rand_index = randint(1, 24)
+          rand_move = randint(0, 3)
+
+          spot_check = board[rand_index - moves[rand_move]]<2 and board[rand_index]<0 and rand_index-moves[rand_move]> 1
+          check = 0
+
+          #while moves[rand_move] == 0 and spot_check == False and  and rand_index-rand_move< 1:
+          while moves[rand_move] == 0 or spot_check == False:
+            rand_move = randint(0, 3)
+            rand_index = randint(1, 24)
+            #spot_check =board[rand_index]<0 and board[rand_index - moves[rand_move]]<2
+            spot_check = board[rand_index - moves[rand_move]]<2 and board[rand_index]<0 and rand_index-moves[rand_move]> 1
+            print ("check: "+ str(check))
+            check =check+1
+
+
+          #if board[rand_index]<0 and board[rand_index - moves[rand_move]]<2:
+          picked_space = True
+          move = moves[rand_move]
+          moves[rand_move] = 0
+
+    print(possible_moves)
+
+    if possible_moves >0:
+
+
+
+      while(move_valid == False and turn ==1):
+        #print(moves)
+        move = int(input("Which move would you like to take? "))
+        for i in range(0,4):
+          if (moves[i]== move):
+            moves[i] = 0
+            move_valid = True
+            break
+        if (move_valid == False):
+          print("Move invalid, please try again")
+
+      movePiece(move,turn,rand_index)
+    else:
+        print("No possible moves, turn over")
+
+#this is the main function
+#board = initialize()
 
 #some game logic
 
 #fix later to allow roll to determine turn
-  init_turn = randint(0, 1) #if 0 then dark starts, if 1 then light starts
+init_turn = randint(0, 1) #if 0 then dark starts, if 1 then light starts
+print(board)
+print(center_bar)
 
-  if (init_turn == 0):
-    turn = -1
-  else:
-    turn = 1
+if (init_turn == 0):
+  turn = -1
+else:
+  turn = 1
 
 #alternates between player turns until game finishes
 while(abs(light_zone)<15 and abs(dark_zone)<15):
     if (turn == -1):
       print('Dark turn')
-      roll()
-      movePiece(5,turn)
+      moves = roll()
+      makeMoves(moves)
+      #movePiece(5,turn)
     else:
       print('Light turn')
-      roll()
-      movePiece(5,turn)
+      moves = roll()
 
-  
+      makeMoves(moves)
+
     time.sleep(2)
     turn = turn*-1
+
+
+  #add check for overflowing board edge
 
 #player movement and verification
 def movePiece(move,turn):
   print(board)
+
   if(turn == 1):
-    origin_index = int(input("What space would you like to move from? ")) -1
+
+    if center_bar[0] >0:
+      origin_index = 0
+    else:
+      origin_index = int(input("What space would you like to move from? "))
 
     #origin validity check
+
+
     while(board[origin_index]<1):
       print('That spot does not have enough peices or is not yours.')
-      origin_index = int(input("What space would you like to move from? ")) -1
+      origin_index = int(input("What space would you like to move from? "))
 
 
     print(origin_index)
     print('there are '+str(board[origin_index])+' at index '+ str(origin_index+1))
 
-  
+
     destination_index = origin_index+move
 
     #destination validity check
     while(board[origin_index+move]<-1):
       print("Invalid move, destination is blocked")
-      origin_index = int(input("What space would you like to move from? ")) -1
+      origin_index = int(input("What space would you like to move from? "))
       while(board[origin_index]<1):
         print('That spot does not have enough peices or is not yours.')
-        origin_index = int(input("What space would you like to move from? ")) -1
+        origin_index = int(input("What space would you like to move from? "))
 
       destination_index = origin_index+move
-  
+
     # STILL NEED TO FILL IN LOGIC FOR HITTING PIECE
     if(board[origin_index+move]==-1):
       print("You hit a dark peice")
+      board[origin_index]=board[origin_index]-1
+      board[destination_index]=1
+      board[25] = board[25]-1
+      center_bar[1]=center_bar[1]-1
+      if origin_index == 0:
+        center_bar[0]=center_bar[0]-1
+      print(board)
+      print(center_bar)
     else:
-    
+
       board[origin_index]=board[origin_index]-1
       board[destination_index]=board[destination_index]+1
+      if origin_index == 0:
+        center_bar[0]=center_bar[0]-1
       print(board)
+      print(center_bar)
   elif(turn == -1):
-    origin_index = int(input("What space would you like to move from? ")) -1
+    if center_bar[1] <0:
+      origin_index = 25
+    else:
+      origin_index = int(input("What space would you like to move from? "))
 
     #origin validity check
     while(board[origin_index]>-1):
       print('That spot does not have enough peices or is not yours.')
-      origin_index = int(input("What space would you like to move from? ")) -1
+      origin_index = int(input("What space would you like to move from? "))
 
 
     print(origin_index)
@@ -136,20 +224,132 @@ def movePiece(move,turn):
     #destination validity check
     while(board[origin_index-move]>1):
       print("Invalid move, destination is blocked")
-      origin_index = int(input("What space would you like to move from? ")) -1
+      origin_index = int(input("What space would you like to move from? "))
       while(board[origin_index]>-1):
         print('That spot does not have enough peices or is not yours.')
-        origin_index = int(input("What space would you like to move from? ")) -1
+        origin_index = int(input("What space would you like to move from? "))
 
       destination_index = origin_index-move
-  
+
     if(board[origin_index-move]==1):
       print("You hit a light peice")
+      board[origin_index]=board[origin_index]+1
+      board[destination_index]=-1
+      board[0] = board[0]+1
+      center_bar[0]=center_bar[0]+1
+      if origin_index == 25:
+        center_bar[1]=center_bar[1]+1
+      print(board)
+      print(center_bar)
     else:
-    
+
       board[origin_index]=board[origin_index]+1
       board[destination_index]=board[destination_index]-1
+      if origin_index == 25:
+        center_bar[1]=center_bar[1]+1
       print(board)
+      print(center_bar)
+
+#Prototyping possible move check
+
+#player movement and verification
+def movePiece(move,turn,rand_index):
+  print("Rand_index:" + str(rand_index))
+  print("move:" + str(move))
+  if(turn == 1):
+
+    if center_bar[0] >0:
+      origin_index = 0
+    else:
+      origin_index = int(input("What space would you like to move from? "))
+
+    #origin validity check
 
 
-movePiece(4,-1)
+    while(board[origin_index]<1):
+      print('That spot does not have enough peices or is not yours.')
+      origin_index = int(input("What space would you like to move from? "))
+
+
+    print(origin_index)
+    print('there are '+str(board[origin_index])+' at index '+ str(origin_index+1))
+
+
+    destination_index = origin_index+move
+
+    #destination validity check
+    while(board[origin_index+move]<-1 or origin_index+move >24):
+      print("Invalid move, destination is blocked")
+      origin_index = int(input("What space would you like to move from? "))
+      while(board[origin_index]<1):
+        print('That spot does not have enough peices or is not yours.')
+        origin_index = int(input("What space would you like to move from? "))
+
+      destination_index = origin_index+move
+
+    # STILL NEED TO FILL IN LOGIC FOR HITTING PIECE
+    if(board[origin_index+move]==-1):
+      print("You hit a dark peice")
+      board[origin_index]=board[origin_index]-1
+      board[destination_index]=1
+      board[25] = board[25]-1
+      center_bar[1]=center_bar[1]-1
+      if origin_index == 0:
+        center_bar[0]=center_bar[0]-1
+      print(board)
+      print(center_bar)
+    else:
+
+      board[origin_index]=board[origin_index]-1
+      board[destination_index]=board[destination_index]+1
+      if origin_index == 0:
+        center_bar[0]=center_bar[0]-1
+      print(board)
+      print(center_bar)
+  elif(turn == -1):
+
+    if center_bar[1] <0:
+      origin_index = 25
+    else:
+      #origin_index = int(input("What space would you like to move from? ")) \
+      origin_index = rand_index
+
+    #origin validity check
+    while(board[origin_index]>-1):
+      print('That spot does not have enough peices or is not yours.')
+      origin_index = int(input("What space would you like to move from? "))
+
+
+    print(origin_index)
+    print('there are '+str(board[origin_index])+' at index '+ str(origin_index+1))
+
+    destination_index = origin_index-move
+
+    #destination validity check
+    while(board[origin_index-move]>1 or origin_index-move <1):
+      print("Invalid move, destination is blocked")
+      origin_index = int(input("What space would you like to move from? "))
+      while(board[origin_index]>-1):
+        print('That spot does not have enough peices or is not yours.')
+        origin_index = int(input("What space would you like to move from? "))
+
+      destination_index = origin_index-move
+
+    if(board[origin_index-move]==1):
+      print("You hit a light peice")
+      board[origin_index]=board[origin_index]+1
+      board[destination_index]=-1
+      board[0] = board[0]+1
+      center_bar[0]=center_bar[0]+1
+      if origin_index == 25:
+        center_bar[1]=center_bar[1]+1
+      print(board)
+      print(center_bar)
+    else:
+
+      board[origin_index]=board[origin_index]+1
+      board[destination_index]=board[destination_index]-1
+      if origin_index == 25:
+        center_bar[1]=center_bar[1]+1
+      print(board)
+      print(center_bar)
