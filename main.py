@@ -2,6 +2,8 @@ import kivy
 
 kivy.require('1.9.0')
 
+from kivy.app import App
+from kivy.uix.screenmanager import Screen, SlideTransition
 
 from kivy.app import App
 from kivy.core.audio import SoundLoader
@@ -32,7 +34,7 @@ Builder.load_string("""
 
 <Button>:
     font_name: 'Arial'
-    font_size: 25
+    font_size: 45
     bold: True
     color: 0, 1, 0, 1
     size_hint: 0.3,0.2
@@ -40,7 +42,9 @@ Builder.load_string("""
     background_down: 'downleather.png'
     
 <MyInstructions@Label>:
-    color:1, 1 ,1,1
+    
+    color:160, 82, 45, 1
+    
     text:
         '\\n\\n\\n\\n'+\
         'Game Instructions: \\n\\n' +\
@@ -173,38 +177,52 @@ Builder.load_string("""
                 exit()
                 
 <ScreenHelp>:                             
-    # FloatLayout:
-    #     Background: 
-    #         id: background
-    #         canvas.before:
-    #             Rectangle:
-    #                 size: self.size
-    #                 pos: self.pos
-    #                 source: "backgroundMenu.png"
-    #             Rectangle:
-    #                 size: self.width, 138
-    #                 pos: self.pos[0], self.pos[1] + self.height -950
-    #                 texture: self.dice_texture
-    #             Rectangle:
-    #                 size: self.width, 500
-    #                 pos: self.pos[0], self.pos[1] + self.height -300
-    #                 texture: self.points_texture
-                
-                 
-    ScrollView:
-        GridLayout:
-            cols:1    
-            size_hint_y: None 
-            height: self.minimum_height 
-
-            MyInstructions:
-
-                    
-           
-                
-            
-           
+   
     
+    FloatLayout:
+        Background: 
+            id: background
+            canvas.before:
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+                    source: "backgroundMenu.png"
+                # Rectangle:
+                #     size: self.width, 138
+                #     pos: self.pos[0], self.pos[1] + self.height -950
+                #     texture: self.dice_texture
+                # Rectangle:
+                #     size: self.width, 500
+                #     pos: self.pos[0], self.pos[1] + self.height -300
+                #     texture: self.points_texture      
+        ScrollView:
+            GridLayout:
+                cols:1  
+                #pos: self.x - 50, self.y - 50  
+                size_hint_y: None 
+                size_hint_x: 1.25
+                height: self.minimum_height 
+                
+                MyInstructions:
+                
+        
+        
+    Background: 
+        id: background
+        canvas.before:        
+            
+            Rectangle:
+                size: self.width, 138
+                pos: self.pos[0], self.pos[1] + self.height -1200
+                texture: self.dice_texture
+          
+            Rectangle:
+                size: self.width, 138
+                pos: self.pos[0], self.pos[1] + self.height -200
+                texture: self.dice_texture               
+        
+           
+                
     BoxLayout:
         Button:
             text: "Main Menu"
@@ -223,7 +241,64 @@ Builder.load_string("""
                     size: self.size
                     pos: self.pos
                     source: "roll.png"
+   
+                     
+    BoxLayout
+        id: login_layout
+        orientation: 'vertical'
+        padding: [10,20,10,20]
+        spacing: 10
+
+
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Login'
+                font_size: 75
+                size_hint: (.5, None)
+
+            TextInput:
+                
+                id: login
+                multiline:False
+                font_size: 75
+                size_hint: (.5, None)
+                height: 100
+                multiline: False
+                
+            Label:
+                text: 'Password'
+                font_size: 75
+                size_hint: (.5, None)
+
+            TextInput:
+                
+                id: password
+                multiline:False
+                password:True
+                font_size: 75
+                size_hint: (.5, None)
+                height: 100
+                multiline: False
+                
+            Label:
+                text: ''
+                font_size: 15
+
+            
     BoxLayout:
+
+        Button:
+            text: 'login!'
+            font_size: 45
+    
+            on_press: root.manager.do_login(login.text, password.text)
+    
+        Button:
+            text: "log out"
+            font_size: 45
+            on_press: root.disconnect()   
         Button:
             text: "Main Menu"
             on_press:
@@ -232,6 +307,9 @@ Builder.load_string("""
 """)
 
 ##----------------------------------------------------------------------------------------------------------------------
+
+
+
 class Background(Widget):
     dice_texture = ObjectProperty(None)
     points_texture = ObjectProperty(None)
@@ -262,15 +340,18 @@ class Background(Widget):
         texture = self.property("points_texture")
         texture.dispatch(self)
 
-    def on_start(self):
+
         Clock.schedule_interval(self.root.ids.background.scroll_textures, 1 / 500.)
 
     pass
+
+
 
 ##----------------------------------------------------------------------------------------------------------------------
 # Create a class for all screens in which you can include
 # helpful methods specific to that screen
 class ScreenMenu(Screen):
+
     pass
 
 class ScreenGame(Screen):
@@ -280,6 +361,38 @@ class ScreenHelp(Screen):
     pass
 
 class ScreenScores(Screen):
+    username = StringProperty(None)
+    password = StringProperty(None)
+
+    #Figuring out log in
+    class Login(Widget):
+        def do_login(self, loginText, passwordText):
+            app = App.get_running_app()
+
+            app.username = loginText
+            app.password = passwordText
+
+            self.manager.transition = SlideTransition(direction="left")
+            self.manager.current = 'connected'
+
+            app.config.read(app.get_application_config())
+            app.config.write()
+
+        def resetForm(self):
+            self.ids['login'].text = ""
+            self.ids['password'].text = ""
+
+        def disconnect(self):
+            self.manager.transition = SlideTransition(direction="right")
+            self.manager.current = 'login'
+            self.manager.get_screen('login').resetForm()
+
+    class Connected(Screen):
+        def disconnect(self):
+            self.manager.transition = SlideTransition(direction="right")
+            self.manager.current = 'login'
+            self.manager.get_screen('login').resetForm()
+
     pass
 
 ##----------------------------------------------------------------------------------------------------------------------
@@ -297,10 +410,26 @@ screen_manager.add_widget(ScreenScores(name="screen_scores"))
 
 class Backgammon(App):
 
+
     def build(self):
         return screen_manager
 
     pass
+
+    #Code cited from github gist
+    def get_application_config(self):
+        if (not self.username):
+            return super(Backgammon, self).get_application_config()
+
+        conf_directory = self.user_data_dir + '/' + self.username
+
+        if (not os.path.exists(conf_directory)):
+            os.makedirs(conf_directory)
+
+        return super(Backgammon, self).get_application_config(
+            '%s/config.cfg' % (conf_directory)
+        )
+
 
 app = Backgammon()
 app.run()
